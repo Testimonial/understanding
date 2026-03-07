@@ -3,7 +3,7 @@
 ## All 31 Metrics at a Glance
 
 ```
-SPEC KIT QUALITY METRICS (31 Total)
+UNDERSTANDING QUALITY METRICS (31 Total)
 |
 +-- STRUCTURE (30% weight) - 5 metrics
 |   +-- Atomicity Score (9.00%) HIGHEST
@@ -93,6 +93,24 @@ understanding metrics-scan --all --enhanced
 ### CI/CD Integration
 ```bash
 understanding metrics-scan --all --threshold 0.70 --fail-below-threshold
+```
+
+## Energy Metrics (Optional)
+
+Activated with `--energy`. Uses a local language model to detect ambiguity.
+
+| Metric | What It Measures |
+|--------|-----------------|
+| Mean Energy | Overall plausibility |
+| Max Energy | Worst ambiguity hotspot |
+| Dispersion | Difficulty uniformity |
+| Anchor Ratio | % easy tokens |
+| Tail Ratio | % hard tokens |
+
+Separate overlay — not part of the 31-metric score.
+
+```bash
+understanding scan spec.md --energy
 ```
 
 ## Documentation

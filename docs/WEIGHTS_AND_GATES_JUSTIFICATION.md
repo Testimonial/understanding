@@ -575,6 +575,32 @@ Overall: 55.9%
 
 ---
 
+## Energy Metrics: Complementary Analysis
+
+Energy metrics (activated with `--energy`) are a separate overlay and do NOT affect the 31-metric weighted score or quality gates.
+
+### Why Separate?
+
+The 31 deterministic metrics are rule-based — they check known quality attributes (structure, readability, testability) against established formulas and standards. Energy metrics use a fundamentally different approach: a language model reads the text and flags tokens that are statistically surprising.
+
+This makes them complementary:
+- **31 metrics** tell you *what* is wrong (passive voice, missing actor, low readability)
+- **Energy metrics** tell you *where* ambiguity hides (specific tokens/phrases the model finds surprising)
+
+A requirement can pass all quality gates but still contain an oddly worded phrase that the energy model detects.
+
+### Why No Gate?
+
+Energy scores depend on the language model's training data and are less calibrated than the deterministic metrics. They are best used as advisory signals, not hard gates.
+
+### Scientific Basis
+
+- Hinton (1985): Boltzmann Machines — energy as compatibility score
+- Friston (2010): Free Energy Principle — brain minimizes surprise
+- Gladstone et al. (2025): Energy-Based Transformers — token-level energy
+
+---
+
 ## Version History
 
 - **v3.4.0** (2026-03-07): Energy metrics overlay, bug fixes, doc cleanup

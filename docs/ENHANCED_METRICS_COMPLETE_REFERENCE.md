@@ -518,7 +518,7 @@ Metrics that contribute most to overall score:
 ### Python API
 
 ```python
-from specify_cli.enhanced_metrics import analyze_with_enhanced_metrics
+from understanding.enhanced_metrics import analyze_with_enhanced_metrics
 
 # Analyze with all 31 metrics
 result = analyze_with_enhanced_metrics(requirements_text, use_spacy=True)
@@ -621,11 +621,11 @@ understanding metrics-scan --spec specs/001-feature/spec.md --enhanced --json
 **Code changes**:
 ```python
 # Before (base 18)
-from specify_cli.normalized_metrics import analyze_with_normalized_metrics
+from understanding.normalized_metrics import analyze_with_normalized_metrics
 result = analyze_with_normalized_metrics(text)
 
 # After (enhanced 31)
-from specify_cli.enhanced_metrics import analyze_with_enhanced_metrics
+from understanding.enhanced_metrics import analyze_with_enhanced_metrics
 result = analyze_with_enhanced_metrics(text, use_spacy=True)
 
 # Access scores the same way
@@ -714,6 +714,49 @@ After: "WHEN user submits form with valid data, system stores data in database a
 
 ---
 
+## Energy Metrics (Optional Overlay)
+
+Energy metrics are a separate overlay activated with `--energy`. They use token-level perplexity from a local language model (SmolLM2-135M) to detect ambiguity that pattern matching cannot catch.
+
+### How They Relate to the 31 Metrics
+
+The 31 deterministic metrics are a rule-based inspector checking structure, readability, and testability. Energy metrics are a second pair of eyes — a language model reading your requirements and flagging parts that feel ambiguous, even when all rules pass. Energy metrics are NOT part of the 31-metric score or quality gates.
+
+### 5 Energy Metrics
+
+| Metric | Score Range | What It Measures |
+|--------|------------|-----------------|
+| Mean Energy | 0-1 | Overall plausibility — how well text fits standard language patterns |
+| Max Energy | 0-1 | Localized ambiguity — the single most surprising token |
+| Dispersion | 0-1 | Uniformity — whether difficulty is spread evenly or concentrated |
+| Anchor Ratio | 0-1 | Clarity — percentage of well-predicted, easy tokens |
+| Tail Ratio | 0-1 | Ambiguity — percentage of highly surprising tokens |
+
+Plus a composite score (weighted average) and hotspot tokens (top 5 most ambiguous tokens).
+
+### Installation
+
+```bash
+pip install "understanding[energy]"
+# Or with uv
+uv tool install git+https://github.com/Testimonial/understanding.git \
+  --with "transformers>=4.30.0" --with "torch>=2.0.0"
+```
+
+### Usage
+
+```bash
+understanding scan spec.md --energy
+```
+
+### Scientific Foundation
+
+- Hinton (1985): Boltzmann Machines — energy as compatibility score
+- Friston (2010): Free Energy Principle — brain minimizes surprise
+- Gladstone et al. (2025): Energy-Based Transformers — token-level energy
+
+---
+
 **For detailed formulas on base 18 metrics**, see `NORMALIZED_METRICS_COMPLETE_REFERENCE.md`
 **For scientific validation**, see `SCIENTIFIC_VALIDATION_REPORT.md`
-**For implementation details**, see `src/specify_cli/enhanced_metrics.py`
+**For implementation details**, see `src/understanding/enhanced_metrics.py`

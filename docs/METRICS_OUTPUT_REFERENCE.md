@@ -181,7 +181,7 @@ Each score object contains:
 #### Access Summary Metrics
 
 ```python
-from specify_cli.enhanced_metrics import analyze_with_enhanced_metrics
+from understanding.enhanced_metrics import analyze_with_enhanced_metrics
 
 result = analyze_with_enhanced_metrics(requirements_text)
 enhanced = result["enhanced_metrics"]
@@ -346,7 +346,7 @@ Top Issues:
 ## Example Analysis Workflow
 
 ```python
-from specify_cli.enhanced_metrics import analyze_with_enhanced_metrics
+from understanding.enhanced_metrics import analyze_with_enhanced_metrics
 
 # Run analysis
 result = analyze_with_enhanced_metrics(spec_text)
@@ -440,6 +440,31 @@ else:
 - `transition_completeness_score`
 - `branch_coverage_score`
 - `observability_score`
+
+---
+
+## Energy Metrics Output (Optional)
+
+When using `--energy`, additional energy analysis is displayed after the standard metrics:
+
+```
+Energy Analysis
+==============
+Score         Raw Value    Interpretation
+Mean Energy   0.82         3.21           Good - text fits standard patterns
+Max Energy    0.65         7.84           Fair - some ambiguous tokens
+Dispersion    0.74         4.12           Good - difficulty spread evenly
+Anchor Ratio  0.71         0.71           Good - 71% easy tokens
+Tail Ratio    0.88         0.12           Good - only 12% hard tokens
+Composite     0.76                        Good
+
+Hotspot Tokens (most ambiguous):
+  "authenticate"  9.23
+  "provisioned"   8.67
+  "concurrent"    7.84
+```
+
+In JSON output (`--json --energy`), energy data appears in the `energy` key of each result.
 
 ---
 
