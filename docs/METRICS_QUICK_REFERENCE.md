@@ -95,7 +95,7 @@ understanding metrics-scan --all --enhanced
 understanding metrics-scan --all --threshold 0.70 --fail-below-threshold
 ```
 
-## Energy Metrics (Optional)
+## Energy Metrics (Experimental)
 
 Activated with `--energy`. Uses a local language model to detect ambiguity.
 

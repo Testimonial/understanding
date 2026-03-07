@@ -714,7 +714,7 @@ After: "WHEN user submits form with valid data, system stores data in database a
 
 ---
 
-## Energy Metrics (Optional Overlay)
+## Energy Metrics (Experimental)
 
 Energy metrics are a separate overlay activated with `--energy`. They use token-level perplexity from a local language model (SmolLM2-135M) to detect ambiguity that pattern matching cannot catch.
 

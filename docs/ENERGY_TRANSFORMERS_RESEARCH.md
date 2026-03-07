@@ -1,5 +1,7 @@
 # Energy‑Based Transformers as a Production‑Grade Bridge Between Hinton‑Style Energies and 2026 Transformer Systems
 
+> **Status: Experimental** — Energy metrics are an experimental feature based on this research.
+
 ## Executive summary
 
 Your proposal is anchored in a real and highly relevant 2025 development: **Energy‑Based Transformers (EBTs)** were introduced in **July 2025** by entity["people","Alexi Gladstone","ebt lead author 2025"] and coauthors as a new class of **Energy‑Based Models implemented with Transformer backbones** that assign an **energy** to each *(context, candidate‑prediction)* pair and then **generate predictions by minimizing that energy via gradient descent**. citeturn7view0turn2view2

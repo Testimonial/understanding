@@ -23,7 +23,7 @@ Scans requirement specifications and scores them across 6 categories:
 
 Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-1998.
 
-### Energy Metrics (Optional)
+### Energy Metrics (Experimental)
 
 5 additional metrics using token-level perplexity from a local language model (SmolLM2-135M). Based on Hinton's energy framework and the Free Energy Principle — high-energy tokens are "surprising" to the model, which correlates with ambiguity or unusual phrasing.
 
@@ -60,7 +60,7 @@ pip install "understanding[all]"
 python -m spacy download en_core_web_sm
 ```
 
-### With Energy Metrics (Optional)
+### With Energy Metrics (Experimental)
 
 Adds token-level perplexity analysis using a local language model (SmolLM2-135M, ~270MB auto-download on first use). No API keys needed.
 
@@ -121,7 +121,7 @@ understanding spec.md --json --validate
 understanding spec.md --csv --output results.csv
 ```
 
-### Energy Analysis
+### Energy Analysis (Experimental)
 
 ```bash
 # Detect ambiguity hotspots using token perplexity
@@ -140,7 +140,7 @@ understanding spec.md --per-req
 |------|-------------|---------|
 | `[SPEC]` | Path to spec file or directory | Auto-discover |
 | `--basic` | Use 18 base metrics only (faster, no NLP) | Off |
-| `--energy` | Token-level ambiguity analysis | Off |
+| `--energy` | [Experimental] Token-level ambiguity analysis | Off |
 | `--ears` | EARS pattern compliance | Off |
 | `--diagram [PATH]` | Diagram output (text, or PNG/SVG/PDF to file) | Off |
 | `--validate` / `-v` | Enforce quality gates | Off |
@@ -205,7 +205,7 @@ print(f"Structure: {categories['structure']:.2%}")
 print(f"Testability: {categories['testability']:.2%}")
 ```
 
-### Energy API
+### Energy API (Experimental)
 
 ```python
 from understanding import analyze_energy

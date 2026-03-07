@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Energy-Based Understanding Metrics - Token-level perplexity analysis.
+Energy-Based Understanding Metrics (Experimental) - Token-level perplexity analysis.
 
 Uses a small local language model to compute per-token perplexity as a proxy
 for the energy-based "understanding difficulty" described in:

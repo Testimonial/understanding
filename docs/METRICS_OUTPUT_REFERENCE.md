@@ -443,7 +443,7 @@ else:
 
 ---
 
-## Energy Metrics Output (Optional)
+## Energy Metrics Output (Experimental)
 
 When using `--energy`, additional energy analysis is displayed after the standard metrics:
 

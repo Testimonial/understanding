@@ -91,7 +91,7 @@ def scan(
     energy: bool = typer.Option(
         False,
         "--energy",
-        help="Compute token-level energy metrics using a local LM (requires: pip install understanding[energy])",
+        help="[Experimental] Token-level ambiguity detection using a local LM (requires: pip install understanding[energy])",
     ),
 ):
     """Scan requirements for quality metrics.
@@ -901,7 +901,7 @@ def _aggregate_entity_analysis(results: list) -> dict:
 def _print_energy_analysis(energy: dict):
     """Display energy metrics analysis."""
     console.print()
-    console.print(Panel("[bold]Energy Analysis[/bold] (token-level perplexity)", style="blue"))
+    console.print(Panel("[bold]Energy Analysis[/bold] [dim](experimental)[/dim] — token-level perplexity", style="blue"))
 
     # Score table
     table = Table(show_header=True, header_style="bold")
@@ -975,7 +975,7 @@ def _print_energy_analysis(energy: dict):
 def _print_batch_energy(energy_results: list, avg_composite: float):
     """Display energy analysis summary for batch runs with explanation."""
     console.print()
-    console.print(Panel("[bold]Energy Analysis[/bold] — ambiguity detection via token perplexity", style="blue"))
+    console.print(Panel("[bold]Energy Analysis[/bold] [dim](experimental)[/dim] — ambiguity detection via token perplexity", style="blue"))
 
     # Explanation
     if avg_composite >= 0.80:

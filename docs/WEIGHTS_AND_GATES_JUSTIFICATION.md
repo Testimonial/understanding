@@ -575,7 +575,7 @@ Overall: 55.9%
 
 ---
 
-## Energy Metrics: Complementary Analysis
+## Energy Metrics (Experimental): Complementary Analysis
 
 Energy metrics (activated with `--energy`) are a separate overlay and do NOT affect the 31-metric weighted score or quality gates.
 
