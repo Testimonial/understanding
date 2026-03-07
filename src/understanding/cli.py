@@ -15,7 +15,7 @@ _SUBCOMMANDS = {"version", "scan", "--help", "-h"}
 
 app = typer.Typer(
     name="understanding",
-    help="Requirements understanding and cognitive load metrics (31 scientifically-proven metrics)",
+    help="Requirements quality metrics — 31 measures based on readability formulas, IEEE/ISO standards, and RE research",
     add_completion=False,
 )
 console = Console()
@@ -34,7 +34,7 @@ QUALITY_GATES = {
 }
 
 
-@app.command()
+@app.command(hidden=True)
 def scan(
     spec: Optional[Path] = typer.Argument(
         None,
@@ -96,7 +96,7 @@ def scan(
 ):
     """Scan requirements for quality metrics.
 
-    Analyzes specifications using 31 scientifically-proven metrics with NLP
+    Analyzes specifications using 31 metrics with NLP
     and entity extraction enabled by default. Use --basic for fast mode
     without NLP (18 metrics only).
 
@@ -520,7 +520,7 @@ def version():
     from . import __version__
 
     console.print(f"understanding version {__version__}")
-    console.print("31 scientifically-proven requirements quality metrics")
+    console.print("31 requirements quality metrics based on readability formulas, IEEE/ISO standards, and RE research")
 
 
 def _parse_requirements(spec_text: str) -> dict:

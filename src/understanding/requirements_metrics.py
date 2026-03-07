@@ -2,7 +2,7 @@
 """
 Requirements Quality Metrics - Deterministic Evaluation
 
-Implements scientifically-proven metrics for requirement understanding and cognitive analysis:
+Implements metrics for requirement understanding and cognitive analysis:
 1. Readability metrics (Flesch, Gunning Fog, etc.)
 2. Structural analysis (noun-verb relationships, actor-action-object patterns)
 3. Cognitive complexity metrics

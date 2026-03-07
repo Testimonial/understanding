@@ -1,6 +1,6 @@
 # Understanding
 
-**Requirements quality metrics - 31 deterministic measures across 6 dimensions**
+**31 requirements quality metrics based on readability formulas, IEEE/ISO standards, and RE research**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,14 +12,14 @@ Scans requirement specifications and scores them across 6 categories:
 
 ### 31 Deterministic Metrics
 
-| Category | Metrics | Weight | What It Measures |
-|----------|---------|--------|-----------------|
-| Structure | 5 | 30% | Atomicity, completeness, passive voice, pronouns, modal verbs |
-| Testability | 3 | 20% | Quantifiable constraints, density, boundary coverage |
-| Readability | 6 | 15% | Flesch, Kincaid, Gunning Fog, SMOG, Coleman-Liau, ARI |
-| Cognitive | 7 | 15% | Sentence length, complexity, density, negations, conditionals |
-| Semantic | 6 | 10% | Actor/action/object presence, outcomes, triggers |
-| Behavioral | 4 | 10% | Scenarios, transitions, branches, observability |
+| Category | Metrics | Weight | Basis | What It Measures |
+|----------|---------|--------|-------|-----------------|
+| Structure | 5 | 35% | IEEE 830, ISO 29148 | Atomicity, completeness, passive voice, pronouns, modal verbs |
+| Readability | 6 | 25% | Flesch 1948, Kincaid 1975, Gunning 1952 | Flesch, Kincaid, Gunning Fog, SMOG, Coleman-Liau, ARI |
+| Cognitive | 7 | 25% | Sweller 1988 (Cognitive Load Theory) | Sentence length, complexity, density, negations, conditionals |
+| Semantic | 6 | 5% | Lucassen 2017 (Visual Narrator) | Actor/action/object presence, outcomes, triggers |
+| Testability | 3 | 5% | IEEE 830 §4.3.7 | Quantifiable constraints, density, boundary coverage |
+| Behavioral | 4 | 5% | Harel 2003/2005 (Statecharts) | Scenarios, transitions, branches, observability |
 
 Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-1998.
 
@@ -238,17 +238,17 @@ specify implement
 
 ## All 31 Metrics
 
-**Structure (30%)**: Atomicity, Completeness, Passive Voice Ratio, Ambiguous Pronoun Ratio, Modal Strength
+**Structure (35%)** — standards-based (IEEE 830, ISO 29148): Atomicity, Completeness, Passive Voice Ratio, Ambiguous Pronoun Ratio, Modal Strength
 
-**Testability (20%)**: Hard Constraint Ratio, Constraint Density, Negative Space Coverage
+**Readability (25%)** — proven formulas (Flesch 1948, Kincaid 1975, Gunning 1952): Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG, Coleman-Liau, ARI
 
-**Readability (15%)**: Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG, Coleman-Liau, ARI
+**Cognitive (25%)** — theory-informed (Sweller 1988): Sentence Length, Syllable Complexity, Concept Density, Coordination, Subordination, Negation Load, Conditional Load
 
-**Cognitive (15%)**: Sentence Length, Syllable Complexity, Concept Density, Coordination, Subordination, Negation Load, Conditional Load
+**Semantic (5%)** — research-inspired (Lucassen 2017): Actor Presence, Action Presence, Object Presence, Outcome Presence, Trigger Presence, SCC Composite
 
-**Semantic (10%)**: Actor Presence, Action Presence, Object Presence, Outcome Presence, Trigger Presence, SCC Composite
+**Testability (5%)** — standards-based (IEEE 830 §4.3.7): Hard Constraint Ratio, Constraint Density, Negative Space Coverage
 
-**Behavioral (10%)**: Scenario Decomposition, Transition Completeness, Branch Coverage Proxy, Observability Score
+**Behavioral (5%)** — research-inspired (Harel 2003/2005): Scenario Decomposition, Transition Completeness, Branch Coverage Proxy, Observability Score
 
 ## Documentation
 

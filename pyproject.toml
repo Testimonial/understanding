@@ -1,7 +1,7 @@
 [project]
 name = "understanding"
 version = "3.4.0"
-description = "Requirements understanding and cognitive load metrics - scientifically-proven quality validation"
+description = "31 requirements quality metrics based on readability formulas, IEEE/ISO standards, and RE research"
 authors = [
     {name = "Ladislav Bihari", email = "ladislav.bihari@example.com"}
 ]
