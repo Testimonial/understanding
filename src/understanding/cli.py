@@ -43,11 +43,6 @@ def scan(
         "--enhanced/--basic",
         help="Use all 31 metrics (enhanced) or base 18 metrics (basic)",
     ),
-    nlp: bool = typer.Option(
-        False,
-        "--nlp",
-        help="Use spaCy NLP for better semantic analysis (requires: pip install understanding[nlp] && python -m spacy download en_core_web_sm)",
-    ),
     validate: bool = typer.Option(
         False,
         "--validate",
@@ -68,7 +63,7 @@ def scan(
     json_output: bool = typer.Option(
         False,
         "--json",
-        help="Output JSON format instead of human-readable",
+        help="Output JSON format (includes entity data)",
     ),
     output_file: Optional[Path] = typer.Option(
         None,
@@ -81,25 +76,10 @@ def scan(
         "--csv",
         help="Export results as CSV (works with --output or prints to stdout)",
     ),
-    entities: bool = typer.Option(
-        False,
-        "--entities",
-        help="Extract and display entities and relationships (auto-enabled by --diagram/--png)",
-    ),
-    diagram: bool = typer.Option(
-        False,
-        "--diagram",
-        help="Generate text-based entity relationship diagram (auto-enables --entities)",
-    ),
-    png: Optional[Path] = typer.Option(
+    diagram: Optional[str] = typer.Option(
         None,
-        "--png",
-        help="Export diagram to file (auto-enables --entities, infers format from extension: .png/.svg/.pdf)",
-    ),
-    png_format: str = typer.Option(
-        "png",
-        "--png-format",
-        help="Override diagram format (png/svg/pdf) - usually inferred from filename",
+        "--diagram",
+        help="Generate diagram: 'text' for terminal, or path for export (format from extension: .png/.svg/.pdf)",
     ),
     ears: bool = typer.Option(
         False,
@@ -114,35 +94,21 @@ def scan(
 ):
     """Scan requirements for quality metrics.
 
-    Analyzes specifications using scientifically-proven metrics and provides
-    a quality score from 0-1 (0-100%).
+    Analyzes specifications using 31 scientifically-proven metrics with NLP
+    and entity extraction enabled by default. Use --basic for fast mode
+    without NLP (18 metrics only).
 
     Examples:
-        # Basic usage
         understanding scan                                    # Auto-discover and scan
         understanding scan spec.md                           # Scan specific spec
         understanding scan specs/                            # Scan directory
-
-        # Analysis modes
-        understanding scan spec.md --nlp                     # Better semantic analysis
-        understanding scan spec.md --basic                   # 18 base metrics (faster)
-
-        # Entity extraction
-        understanding scan spec.md --entities                # Extract actors/actions/objects
-        understanding scan spec.md --diagram                 # Text diagram (auto-enables entities)
-        understanding scan spec.md --png diagram.png         # PNG export (auto-enables entities)
-        understanding scan spec.md --png diagram.svg         # SVG (format inferred from extension)
-
-        # Energy metrics (token-level perplexity)
-        understanding scan spec.md --energy                  # Local LM energy analysis
-        understanding scan spec.md --energy --nlp            # Combine energy + NLP
-
-        # Validation & CI/CD
+        understanding scan spec.md --basic                   # Fast: 18 metrics, no NLP
+        understanding scan spec.md --diagram text            # Text diagram in terminal
+        understanding scan spec.md --diagram diagram.png     # Export PNG diagram
+        understanding scan spec.md --diagram diagram.svg     # Export SVG diagram
+        understanding scan spec.md --energy                  # Token-level ambiguity analysis
         understanding scan spec.md --validate                # Quality gates (exit 1 if failed)
-        understanding scan spec.md --json --validate         # CI/CD mode
-
-        # Output formats
-        understanding scan spec.md --json                    # JSON output
+        understanding scan spec.md --json                    # JSON output (includes entities)
         understanding scan spec.md --csv --output results.csv # CSV export
     """
     try:
@@ -152,18 +118,25 @@ def scan(
             console.print("Choose one output format: --json OR --csv")
             raise typer.Exit(1)
 
-        # Auto-enable entities if diagram or png requested
-        if diagram or png:
-            if not entities:
-                entities = True
-                if not json_output:
-                    console.print("[dim]Auto-enabled --entities for diagram generation[/dim]")
+        # NLP and entities are on by default (off in --basic mode)
+        use_nlp = enhanced  # True unless --basic
+        entities = enhanced  # entities on unless --basic
 
-        # Infer PNG format from file extension if not specified
-        if png and png_format == "png":  # Default value
-            ext = png.suffix.lstrip('.')
-            if ext in ['svg', 'pdf', 'png']:
-                png_format = ext
+        # Parse --diagram flag
+        show_diagram = False
+        diagram_export_path = None
+        diagram_export_format = "png"
+        if diagram is not None:
+            entities = True  # always need entities for diagrams
+            if diagram.lower() == "text" or diagram == "":
+                show_diagram = True
+            else:
+                # It's a file path
+                diagram_export_path = Path(diagram)
+                show_diagram = True  # also show text diagram
+                ext = diagram_export_path.suffix.lstrip('.')
+                if ext in ['svg', 'pdf', 'png']:
+                    diagram_export_format = ext
 
         # Check energy dependencies early
         if energy:
@@ -217,19 +190,19 @@ def scan(
                     console.print(f"[yellow]Warning:[/yellow] No requirements found in {spec_file.name}")
                     console.print("Looking for patterns like: - **FR-001**: Requirement text")
                     # Fall back to full spec analysis
-                    result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                    result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
                     results.append(result)
                 else:
                     # Analyze each requirement
                     req_results = []
                     for req in parsed["requirements"]:
-                        req_result = _analyze_text(req["text"], enhanced=enhanced, use_nlp=nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                        req_result = _analyze_text(req["text"], enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
                         req_result["requirement_id"] = req["id"]
                         req_result["requirement_text"] = req["text"]
                         req_results.append(req_result)
 
                     # Analyze full spec for overall summary
-                    overall_result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                    overall_result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
                     overall_result["per_requirement"] = req_results
                     overall_result["requirement_count"] = parsed["count"]
 
@@ -246,7 +219,7 @@ def scan(
 
                     results.append(overall_result)
             else:
-                result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
                 results.append(result)
 
         # Output results
@@ -274,7 +247,7 @@ def scan(
                 if entities:
                     console.print("\n[dim]Aggregating entities across all specifications...[/dim]")
                     aggregated = _aggregate_entity_analysis(results)
-                    _print_entity_analysis(aggregated, show_diagram=diagram, png_path=png, png_format=png_format)
+                    _print_entity_analysis(aggregated, show_diagram=show_diagram, png_path=diagram_export_path, png_format=diagram_export_format)
 
                 # Show energy summary for batch
                 if energy:
@@ -293,7 +266,7 @@ def scan(
 
                     # Print entity analysis if requested
                     if entities:
-                        _print_entity_analysis(result, show_diagram=diagram, png_path=png, png_format=png_format)
+                        _print_entity_analysis(result, show_diagram=show_diagram, png_path=diagram_export_path, png_format=diagram_export_format)
 
                     # Print EARS analysis if requested
                     if ears:
@@ -366,7 +339,7 @@ def _print_test_result(result: dict, per_requirement: bool = False):
             # Analyze each requirement
             req_results = []
             for req in parsed["requirements"]:
-                req_result = _analyze_text(req["text"], enhanced=True)
+                req_result = _analyze_text(req["text"], enhanced=True, use_nlp=True, extract_entities=True)
                 req_result["requirement_id"] = req["id"]
                 req_result["requirement_text"] = req["text"]
                 req_results.append(req_result)
@@ -662,53 +635,56 @@ def _analyze_text(text: str, enhanced: bool = True, use_nlp: bool = False, extra
 
     # Extract entities if requested
     if extract_entities:
-        from .semantic_metrics import SemanticAnalyzer
-        import re
+        try:
+            from .semantic_metrics import SemanticAnalyzer
+            import re
 
-        # Split text into requirements (simple sentence splitting)
-        sentences = re.split(r'[.!?]+', text)
-        requirements = [s.strip() for s in sentences if len(s.strip()) > 10]
+            # Split text into requirements (simple sentence splitting)
+            sentences = re.split(r'[.!?]+', text)
+            requirements = [s.strip() for s in sentences if len(s.strip()) > 10]
 
-        analyzer = SemanticAnalyzer(use_spacy=use_nlp)
-        entity_result = analyzer.extract_entities_detailed(requirements, use_nlp=use_nlp)
+            analyzer = SemanticAnalyzer(use_spacy=use_nlp)
+            entity_result = analyzer.extract_entities_detailed(requirements, use_nlp=use_nlp)
 
-        # Convert Entity and Relationship objects to dicts for JSON serialization
-        result_dict["entity_analysis"] = {
-            "entities": [
-                {
-                    "text": e.text,
-                    "type": e.type.value,
-                    "normalized": e.normalized,
-                    "requirement_id": e.requirement_id,
-                    "confidence": e.confidence,
-                }
-                for e in entity_result.entities
-            ],
-            "relationships": [
-                {
-                    "source": {
-                        "text": r.source.text,
-                        "type": r.source.type.value,
-                        "normalized": r.source.normalized,
-                    },
-                    "relation": r.relation,
-                    "target": {
-                        "text": r.target.text,
-                        "type": r.target.type.value,
-                        "normalized": r.target.normalized,
-                    },
-                    "requirement_id": r.requirement_id,
-                }
-                for r in entity_result.relationships
-            ],
-            "summary": {
-                "total_entities": len(entity_result.entities),
-                "unique_actors": len(entity_result.unique_actors),
-                "unique_actions": len(entity_result.unique_actions),
-                "unique_objects": len(entity_result.unique_objects),
-                "entity_counts": {k.value: v for k, v in entity_result.entity_counts.items()},
-            },
-        }
+            # Convert Entity and Relationship objects to dicts for JSON serialization
+            result_dict["entity_analysis"] = {
+                "entities": [
+                    {
+                        "text": e.text,
+                        "type": e.type.value,
+                        "normalized": e.normalized,
+                        "requirement_id": e.requirement_id,
+                        "confidence": e.confidence,
+                    }
+                    for e in entity_result.entities
+                ],
+                "relationships": [
+                    {
+                        "source": {
+                            "text": r.source.text,
+                            "type": r.source.type.value,
+                            "normalized": r.source.normalized,
+                        },
+                        "relation": r.relation,
+                        "target": {
+                            "text": r.target.text,
+                            "type": r.target.type.value,
+                            "normalized": r.target.normalized,
+                        },
+                        "requirement_id": r.requirement_id,
+                    }
+                    for r in entity_result.relationships
+                ],
+                "summary": {
+                    "total_entities": len(entity_result.entities),
+                    "unique_actors": len(entity_result.unique_actors),
+                    "unique_actions": len(entity_result.unique_actions),
+                    "unique_objects": len(entity_result.unique_objects),
+                    "entity_counts": {k.value: v for k, v in entity_result.entity_counts.items()},
+                },
+            }
+        except (ImportError, AttributeError):
+            pass  # entity_metrics module not available, skip silently
 
     return result_dict
 
@@ -755,10 +731,11 @@ def _print_result(result: dict):
 
     # Header
     console.print(f"\n[bold cyan]Requirements Quality Metrics - {spec_name}[/bold cyan]")
-    if enhanced:
-        console.print(f"[dim]Enhanced Mode: {metric_count.get('total', 31)} metrics[/dim]\n")
+    total = metric_count.get('total', 31 if enhanced else 18)
+    if not enhanced:
+        console.print(f"[dim]Basic mode: {total} metrics (no NLP)[/dim]\n")
     else:
-        console.print(f"[dim]Basic Mode: {metric_count.get('total', 18)} metrics[/dim]\n")
+        console.print(f"[dim]{total} metrics[/dim]\n")
 
     # Overall score
     console.print(
