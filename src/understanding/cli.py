@@ -698,7 +698,11 @@ def _analyze_spec(spec_path: Path, enhanced: bool = True, use_nlp: bool = False,
     # Analyze
     result = _analyze_text(spec_text, enhanced=enhanced, use_nlp=use_nlp, extract_entities=extract_entities, check_ears=check_ears, use_energy=use_energy)
     result["spec_path"] = str(spec_path)
-    result["spec_name"] = spec_path.stem
+    # Use parent directory name if filename is generic (spec.md, requirements.md, etc.)
+    if spec_path.stem.lower() in ("spec", "requirements", "req", "readme"):
+        result["spec_name"] = spec_path.parent.name
+    else:
+        result["spec_name"] = spec_path.stem
 
     return result
 
