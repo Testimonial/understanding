@@ -141,7 +141,6 @@ understanding spec.md --per-req
 | `[SPEC]` | Path to spec file or directory | Auto-discover |
 | `--basic` | Use 18 base metrics only (faster, no NLP) | Off |
 | `--energy` | [Experimental] Token-level ambiguity analysis | Off |
-| `--ears` | EARS pattern compliance | Off |
 | `--diagram [PATH]` | Diagram output (text, or PNG/SVG/PDF to file) | Off |
 | `--validate` / `-v` | Enforce quality gates | Off |
 | `--per-req` | Per-requirement breakdown | Off |

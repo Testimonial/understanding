@@ -83,11 +83,6 @@ def scan(
         "--diagram",
         help="Generate diagram: 'text' for terminal, or path for export (format from extension: .png/.svg/.pdf)",
     ),
-    ears: bool = typer.Option(
-        False,
-        "--ears",
-        help="Analyze EARS (Easy Approach to Requirements Syntax) compliance and suggest improvements",
-    ),
     energy: bool = typer.Option(
         False,
         "--energy",
@@ -182,7 +177,7 @@ def scan(
 
         results = []
         for spec_file in spec_files:
-            if per_requirement or ears:
+            if per_requirement:
                 # Parse and analyze per requirement
                 spec_text = spec_file.read_text(encoding="utf-8")
                 parsed = _parse_requirements(spec_text)
@@ -191,36 +186,25 @@ def scan(
                     console.print(f"[yellow]Warning:[/yellow] No requirements found in {spec_file.name}")
                     console.print("Looking for patterns like: - **FR-001**: Requirement text")
                     # Fall back to full spec analysis
-                    result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                    result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, use_energy=energy)
                     results.append(result)
                 else:
                     # Analyze each requirement
                     req_results = []
                     for req in parsed["requirements"]:
-                        req_result = _analyze_text(req["text"], enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                        req_result = _analyze_text(req["text"], enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, use_energy=energy)
                         req_result["requirement_id"] = req["id"]
                         req_result["requirement_text"] = req["text"]
                         req_results.append(req_result)
 
                     # Analyze full spec for overall summary
-                    overall_result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                    overall_result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, use_energy=energy)
                     overall_result["per_requirement"] = req_results
                     overall_result["requirement_count"] = parsed["count"]
 
-                    # Add EARS summary if requested
-                    if ears:
-                        from .ears_patterns import EARSPatternDetector
-                        detector = EARSPatternDetector()
-                        req_texts = [req["text"] for req in parsed["requirements"]]
-                        ears_score, ears_stats = detector.calculate_ears_score(req_texts)
-                        overall_result["ears_analysis"] = {
-                            "score": ears_score,
-                            "stats": ears_stats
-                        }
-
                     results.append(overall_result)
             else:
-                result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, check_ears=ears, use_energy=energy)
+                result = _analyze_spec(spec_file, enhanced=enhanced, use_nlp=use_nlp, extract_entities=entities, use_energy=energy)
                 results.append(result)
 
         # Output results
@@ -268,10 +252,6 @@ def scan(
                     # Print entity analysis if requested
                     if entities:
                         _print_entity_analysis(result, show_diagram=show_diagram, png_path=diagram_export_path, png_format=diagram_export_format)
-
-                    # Print EARS analysis if requested
-                    if ears:
-                        _print_ears_analysis(result)
 
                     # Print energy analysis if requested
                     if energy and "energy" in result:
@@ -591,7 +571,7 @@ def _find_spec() -> Optional[Path]:
     return None
 
 
-def _analyze_text(text: str, enhanced: bool = True, use_nlp: bool = False, extract_entities: bool = False, check_ears: bool = False, use_energy: bool = False) -> dict:
+def _analyze_text(text: str, enhanced: bool = True, use_nlp: bool = False, extract_entities: bool = False, use_energy: bool = False) -> dict:
     """Analyze text and return results."""
     if enhanced:
         from .enhanced_metrics import analyze_with_enhanced_metrics
@@ -617,22 +597,6 @@ def _analyze_text(text: str, enhanced: bool = True, use_nlp: bool = False, extra
         from .energy_metrics import analyze_energy
         energy_result = analyze_energy(text)
         result_dict["energy"] = energy_result.to_dict()
-
-    # Check EARS compliance if requested
-    if check_ears:
-        from .ears_patterns import EARSPatternDetector
-        detector = EARSPatternDetector()
-        ears_result = detector.analyze(text)
-        result_dict["ears"] = {
-            "pattern": ears_result.pattern.value,
-            "confidence": ears_result.confidence,
-            "compliant": ears_result.compliant,
-            "trigger": ears_result.trigger,
-            "system": ears_result.system,
-            "action": ears_result.action,
-            "suggestion": ears_result.suggestion,
-            "issues": ears_result.issues
-        }
 
     # Extract entities if requested
     if extract_entities:
@@ -690,16 +654,16 @@ def _analyze_text(text: str, enhanced: bool = True, use_nlp: bool = False, extra
     return result_dict
 
 
-def _analyze_spec(spec_path: Path, enhanced: bool = True, use_nlp: bool = False, extract_entities: bool = False, check_ears: bool = False, use_energy: bool = False) -> dict:
+def _analyze_spec(spec_path: Path, enhanced: bool = True, use_nlp: bool = False, extract_entities: bool = False, use_energy: bool = False) -> dict:
     """Analyze a spec file and return results."""
     # Read spec
     spec_text = spec_path.read_text(encoding="utf-8")
 
     # Analyze
-    result = _analyze_text(spec_text, enhanced=enhanced, use_nlp=use_nlp, extract_entities=extract_entities, check_ears=check_ears, use_energy=use_energy)
+    result = _analyze_text(spec_text, enhanced=enhanced, use_nlp=use_nlp, extract_entities=extract_entities, use_energy=use_energy)
     result["spec_path"] = str(spec_path)
     # Use parent directory name if filename is generic (spec.md, requirements.md, etc.)
-    if spec_path.stem.lower() in ("spec", "requirements", "req", "readme"):
+    if spec_path.stem.lower() in ("spec", "requirements", "req"):
         result["spec_name"] = spec_path.parent.name
     else:
         result["spec_name"] = spec_path.stem
@@ -1007,94 +971,6 @@ def _print_batch_energy(energy_results: list, avg_composite: float):
 
     console.print()
     console.print(table)
-
-
-def _print_ears_analysis(result: dict):
-    """Display EARS pattern analysis for requirements."""
-    if "ears_analysis" not in result and "per_requirement" not in result:
-        return
-
-    console.print("\n[bold cyan]EARS Compliance Analysis[/bold cyan]")
-    console.print("=" * 60)
-
-    # Show overall stats if available
-    if "ears_analysis" in result:
-        stats = result["ears_analysis"]["stats"]
-        score = result["ears_analysis"]["score"]
-
-        # Summary table
-        table = Table(show_header=True, header_style="bold magenta", box=None)
-        table.add_column("Metric", style="dim")
-        table.add_column("Value", justify="right")
-
-        table.add_row("Overall EARS Score", f"{score:.1%}")
-        table.add_row("Total Requirements", str(stats["total_requirements"]))
-        table.add_row("Compliant", f"{stats['compliant_count']} ({stats['compliance_rate']:.1%})")
-        table.add_row("Non-Compliant", str(stats["non_compliant_count"]))
-        table.add_row("Avg Confidence", f"{stats['avg_confidence']:.1%}")
-
-        console.print(table)
-
-        # Pattern distribution
-        console.print("\n[bold]Pattern Distribution:[/bold]")
-        pattern_table = Table(show_header=False, box=None)
-        pattern_table.add_column("Pattern", style="cyan")
-        pattern_table.add_column("Count", justify="right")
-
-        pattern_names = {
-            'ubiquitous': 'Ubiquitous (The system shall...)',
-            'event-driven': 'Event-Driven (WHEN...)',
-            'state-driven': 'State-Driven (WHILE...)',
-            'unwanted-behavior': 'Unwanted Behavior (IF-THEN...)',
-            'optional-feature': 'Optional Feature (WHERE...)',
-            'none': 'Non-EARS'
-        }
-
-        for pattern_key, count in sorted(stats["pattern_counts"].items(), key=lambda x: x[1], reverse=True):
-            if count > 0:
-                pattern_name = pattern_names.get(pattern_key, pattern_key)
-                pattern_table.add_row(pattern_name, str(count))
-
-        console.print(pattern_table)
-
-    # Show per-requirement details
-    if "per_requirement" in result:
-        console.print("\n[bold]Per-Requirement EARS Analysis:[/bold]")
-
-        for req_result in result["per_requirement"]:
-            if "ears" not in req_result:
-                continue
-
-            req_id = req_result["requirement_id"]
-            ears_data = req_result["ears"]
-
-            # Status icon
-            if ears_data["compliant"]:
-                status = "[green]✓[/green]"
-            else:
-                status = "[red]✗[/red]"
-
-            # Pattern badge
-            pattern_name = ears_data["pattern"].replace("-", " ").title()
-            confidence = ears_data["confidence"]
-
-            console.print(f"\n{status} [bold]{req_id}[/bold]: {pattern_name} ({confidence:.0%})")
-
-            # Show requirement text (truncated)
-            req_text = req_result.get("requirement_text", "")
-            if len(req_text) > 80:
-                req_text = req_text[:77] + "..."
-            console.print(f"  [dim]{req_text}[/dim]")
-
-            # Show issues
-            if ears_data["issues"]:
-                console.print(f"  [yellow]Issues:[/yellow] {', '.join(ears_data['issues'])}")
-
-            # Show suggestion if non-compliant
-            if ears_data["suggestion"]:
-                console.print(f"  [blue]💡 Suggestion:[/blue] {ears_data['suggestion']}")
-
-    console.print()
 
 
 def _print_entity_analysis(result: dict, show_diagram: bool = False, png_path: Optional[Path] = None, png_format: str = "png"):
