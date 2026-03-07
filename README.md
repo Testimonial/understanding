@@ -24,24 +24,39 @@ Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-19
 ## Installation
 
 ```bash
-# Using uv (recommended)
-uv tool install understanding --with "spacy>=3.0.0" --with "graphviz>=0.20.0"
+# Using uv (recommended) — install with NLP + diagram support
+uv tool install git+https://github.com/Testimonial/understanding.git \
+  --with "spacy>=3.0.0" \
+  --with "graphviz>=0.20.0"
 
-# Download language model
+# Download spaCy language model
 uv pip install --python ~/.local/share/uv/tools/understanding/bin/python \
   en-core-web-sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
-# Using pip
+# Using pip (alternative)
 pip install "understanding[all]"
 python -m spacy download en_core_web_sm
 ```
 
-### Optional: Energy Metrics
+### With Energy Metrics (Optional)
 
-Token-level perplexity analysis using a local language model (SmolLM2-135M, ~270MB auto-download):
+Adds token-level perplexity analysis using a local language model (SmolLM2-135M, ~270MB auto-download on first use). No API keys needed.
 
 ```bash
-pip install "understanding[energy]"
+# Using uv — add energy to the install command
+uv tool install git+https://github.com/Testimonial/understanding.git \
+  --with "spacy>=3.0.0" \
+  --with "graphviz>=0.20.0" \
+  --with "transformers>=4.30.0" \
+  --with "torch>=2.0.0"
+
+# Using pip
+pip install "understanding[all,energy]"
+```
+
+Then use with `--energy` flag:
+```bash
+understanding scan spec.md --energy
 ```
 
 ## Usage
