@@ -78,32 +78,32 @@ pip install "understanding[all,energy]"
 
 Then use with `--energy` flag:
 ```bash
-understanding scan spec.md --energy
+understanding spec.md --energy
 ```
 
 ## Usage
 
 ```bash
 # Scan a spec (NLP + entity extraction enabled by default)
-understanding scan spec.md
+understanding spec.md
 
 # Scan all specs in a directory
-understanding scan specs/
+understanding specs/
 
 # Auto-discover spec.md in current directory
-understanding scan
+understanding
 ```
 
 ### Diagrams
 
 ```bash
 # Text diagram in terminal
-understanding scan spec.md --diagram
+understanding spec.md --diagram
 
 # Export to file (format inferred from extension)
-understanding scan spec.md --diagram diagram.png
-understanding scan spec.md --diagram diagram.svg
-understanding scan spec.md --diagram diagram.pdf
+understanding spec.md --diagram diagram.png
+understanding spec.md --diagram diagram.svg
+understanding spec.md --diagram diagram.pdf
 ```
 
 Requires graphviz for PNG/SVG/PDF: `brew install graphviz` (macOS) or `apt install graphviz` (Linux).
@@ -112,26 +112,26 @@ Requires graphviz for PNG/SVG/PDF: `brew install graphviz` (macOS) or `apt insta
 
 ```bash
 # Enforce quality gates (exit code 1 on failure)
-understanding scan spec.md --validate
+understanding spec.md --validate
 
 # JSON for CI/CD
-understanding scan spec.md --json --validate
+understanding spec.md --json --validate
 
 # CSV for spreadsheets
-understanding scan spec.md --csv --output results.csv
+understanding spec.md --csv --output results.csv
 ```
 
 ### Energy Analysis
 
 ```bash
 # Detect ambiguity hotspots using token perplexity
-understanding scan spec.md --energy
+understanding spec.md --energy
 ```
 
 ### Per-Requirement Breakdown
 
 ```bash
-understanding scan spec.md --per-req
+understanding spec.md --per-req
 ```
 
 ## Command Reference
@@ -228,7 +228,7 @@ specify init my-project --ai claude
 cd my-project
 
 # Write spec, then validate
-understanding scan specs/001-feature/spec.md --validate
+understanding specs/001-feature/spec.md --validate
 
 # Continue if gates pass
 specify plan

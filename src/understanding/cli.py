@@ -11,6 +11,8 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 
+_SUBCOMMANDS = {"version", "scan", "--help", "-h"}
+
 app = typer.Typer(
     name="understanding",
     help="Requirements understanding and cognitive load metrics (31 scientifically-proven metrics)",
@@ -99,17 +101,16 @@ def scan(
     without NLP (18 metrics only).
 
     Examples:
-        understanding scan                                    # Auto-discover and scan
-        understanding scan spec.md                           # Scan specific spec
-        understanding scan specs/                            # Scan directory
-        understanding scan spec.md --basic                   # Fast: 18 metrics, no NLP
-        understanding scan spec.md --diagram text            # Text diagram in terminal
-        understanding scan spec.md --diagram diagram.png     # Export PNG diagram
-        understanding scan spec.md --diagram diagram.svg     # Export SVG diagram
-        understanding scan spec.md --energy                  # Token-level ambiguity analysis
-        understanding scan spec.md --validate                # Quality gates (exit 1 if failed)
-        understanding scan spec.md --json                    # JSON output (includes entities)
-        understanding scan spec.md --csv --output results.csv # CSV export
+        understanding                                        # Auto-discover and scan
+        understanding spec.md                                # Scan specific spec
+        understanding specs/                                 # Scan directory
+        understanding spec.md --basic                        # Fast: 18 metrics, no NLP
+        understanding spec.md --diagram text                 # Text diagram in terminal
+        understanding spec.md --diagram diagram.png          # Export PNG diagram
+        understanding spec.md --energy                       # Token-level ambiguity analysis
+        understanding spec.md --validate                     # Quality gates (exit 1 if failed)
+        understanding spec.md --json                         # JSON output (includes entities)
+        understanding version                                # Show version
     """
     try:
         # Validate flag combinations
@@ -1638,7 +1639,11 @@ def _print_per_requirement_result(result: dict):
 
 
 def main():
-    """Main entry point."""
+    """Main entry point. Auto-injects 'scan' if no subcommand given."""
+    args = sys.argv[1:]
+    # If first arg is not a known subcommand, inject 'scan'
+    if not args or args[0] not in _SUBCOMMANDS:
+        sys.argv.insert(1, "scan")
     app()
 
 
