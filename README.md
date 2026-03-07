@@ -35,7 +35,13 @@ Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-19
 | Anchor Ratio | Clarity — percentage of well-predicted, easy tokens |
 | Tail Ratio | Ambiguity — percentage of highly surprising tokens |
 
-Energy metrics are a separate overlay (`--energy` flag), not part of the 31-metric scoring. They highlight *where* in the text ambiguity lives, complementing the *what* from the deterministic metrics.
+### How They Work Together
+
+The 31 metrics are a **rule-based inspector** — they check structure, readability, and testability against established formulas and standards. Energy metrics are a **second pair of eyes** — a language model that reads your requirements and flags parts that feel ambiguous, even when all the rules pass.
+
+A requirement can score 0.90 on the 31 metrics (good structure, readable, testable) but the energy model spots a phrase that's oddly worded or domain-novel — something pattern matching can't catch. The 31 metrics tell you *what* is wrong. Energy metrics tell you *where* the ambiguity hides.
+
+Energy is a separate overlay (`--energy` flag), not part of the 31-metric score or quality gates.
 
 ## Installation
 
