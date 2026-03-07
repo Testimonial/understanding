@@ -252,10 +252,10 @@ def scan(
 
                 # Show energy summary for batch
                 if energy:
-                    energy_results = [r["energy"] for r in results if "energy" in r]
+                    energy_results = [(r.get("spec_name", "?"), r["energy"]) for r in results if "energy" in r]
                     if energy_results:
-                        avg_composite = sum(e["composite_score"] for e in energy_results) / len(energy_results)
-                        console.print(f"\n[bold]Energy Analysis (batch average):[/bold] {avg_composite:.2%}")
+                        avg_composite = sum(e["composite_score"] for _, e in energy_results) / len(energy_results)
+                        _print_batch_energy(energy_results, avg_composite)
             else:
                 for result in results:
                     if per_requirement and "per_requirement" in result:
@@ -968,6 +968,43 @@ def _print_energy_analysis(energy: dict):
             console.print(f"    [yellow]{token:>20}[/yellow]  {e:6.2f}  [dim]{bar}[/dim]")
 
 
+def _print_batch_energy(energy_results: list, avg_composite: float):
+    """Display energy analysis summary for batch runs with explanation."""
+    console.print()
+    console.print(Panel("[bold]Energy Analysis[/bold] — ambiguity detection via token perplexity", style="blue"))
+
+    # Explanation
+    if avg_composite >= 0.80:
+        verdict = "[green]Low ambiguity[/green] — language model finds requirements clear and predictable"
+    elif avg_composite >= 0.60:
+        verdict = "[yellow]Moderate ambiguity[/yellow] — some phrasing is unusual or unclear to a language model"
+    else:
+        verdict = "[red]High ambiguity[/red] — many phrases are surprising/unusual, suggesting vague or unclear wording"
+
+    console.print(f"\n  Batch Average: [bold]{avg_composite:.2%}[/bold]  {verdict}")
+    console.print(f"  [dim]Higher = clearer. Energy scores measure how predictable your text is to a language model.[/dim]")
+    console.print(f"  [dim]Low scores flag phrasing that is ambiguous, domain-novel, or oddly worded.[/dim]")
+
+    # Per-spec breakdown
+    table = Table(show_header=True, header_style="bold", box=None)
+    table.add_column("Spec", style="cyan", min_width=30)
+    table.add_column("Energy", justify="right", min_width=8)
+    table.add_column("Level", min_width=15)
+
+    for name, e_data in sorted(energy_results, key=lambda x: x[1]["composite_score"]):
+        score = e_data["composite_score"]
+        if score >= 0.80:
+            level = "[green]Clear[/green]"
+        elif score >= 0.60:
+            level = "[yellow]Some ambiguity[/yellow]"
+        else:
+            level = "[red]High ambiguity[/red]"
+        table.add_row(name, f"{score:.2%}", level)
+
+    console.print()
+    console.print(table)
+
+
 def _print_ears_analysis(result: dict):
     """Display EARS pattern analysis for requirements."""
     if "ears_analysis" not in result and "per_requirement" not in result:
@@ -1063,6 +1100,11 @@ def _print_entity_analysis(result: dict, show_diagram: bool = False, png_path: O
 
     entity_data = result["entity_analysis"]
     summary = entity_data["summary"]
+
+    # Skip if no entities were found
+    if summary["total_entities"] == 0:
+        return
+
     is_cross_spec = summary.get("cross_spec", False)
 
     # Summary table
