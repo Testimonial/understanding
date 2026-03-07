@@ -220,36 +220,51 @@ for token, energy in result.hotspot_tokens:
 
 ## Usage with Spec Kit
 
-### As Extension (AI agent commands)
+Understanding works both as a **standalone CLI** and as a **Spec Kit extension** that adds `/speckit.understanding.*` slash commands to your AI agent.
 
-```bash
-# Install extension into your spec-kit project
-specify extension add --dev /path/to/understanding/extension
-
-# Then use in your AI agent:
-# /speckit.understanding.scan
-# /speckit.understanding.validate
-# /speckit.understanding.energy
-```
-
-See [extension/README.md](extension/README.md) for details.
-
-### As Standalone Tool
+### Step 1: Install Spec Kit
 
 ```bash
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
-uv tool install understanding
+```
 
-specify init my-project --ai claude
-cd my-project
+### Step 2: Install Understanding CLI (prerequisite)
 
-# Write spec, then validate
+Follow the [Installation](#installation) section above. The extension commands call this tool under the hood.
+
+### Step 3: Install the Extension
+
+```bash
+# Clone and install extension into your spec-kit project
+git clone https://github.com/Testimonial/understanding.git /tmp/understanding
+cd your-project
+specify extension add --dev /tmp/understanding/extension
+
+# Verify
+specify extension list
+# Should show: Understanding (v3.4.0)
+```
+
+### Step 4: Use in AI Agent
+
+```
+/speckit.understanding.scan                          # 31 metrics + entities
+/speckit.understanding.scan specs/001-feature/spec.md  # Specific spec
+/speckit.understanding.validate                      # Enforce quality gates
+/speckit.understanding.energy                        # Experimental ambiguity detection
+```
+
+The extension also hooks into `/speckit.tasks` — after generating tasks, it prompts to validate the spec.
+
+See [extension/README.md](extension/README.md) for full extension documentation.
+
+### Standalone (without extension)
+
+You can also use understanding directly without the extension:
+
+```bash
 understanding specs/001-feature/spec.md --validate
-
-# Continue if gates pass
-specify plan
-specify tasks
-specify implement
+understanding specs/ --energy
 ```
 
 ## All 31 Metrics
