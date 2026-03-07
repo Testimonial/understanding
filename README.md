@@ -10,6 +10,8 @@
 
 Scans requirement specifications and scores them across 6 categories:
 
+### 31 Deterministic Metrics
+
 | Category | Metrics | Weight | What It Measures |
 |----------|---------|--------|-----------------|
 | Structure | 5 | 30% | Atomicity, completeness, passive voice, pronouns, modal verbs |
@@ -20,6 +22,20 @@ Scans requirement specifications and scores them across 6 categories:
 | Behavioral | 4 | 10% | Scenarios, transitions, branches, observability |
 
 Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-1998.
+
+### Energy Metrics (Optional)
+
+5 additional metrics using token-level perplexity from a local language model (SmolLM2-135M). Based on Hinton's energy framework and the Free Energy Principle — high-energy tokens are "surprising" to the model, which correlates with ambiguity or unusual phrasing.
+
+| Metric | What It Measures |
+|--------|-----------------|
+| Mean Energy | Overall plausibility — how well the text fits standard language patterns |
+| Max Energy | Localized ambiguity — the single most surprising token |
+| Dispersion | Uniformity — whether difficulty is spread evenly or concentrated |
+| Anchor Ratio | Clarity — percentage of well-predicted, easy tokens |
+| Tail Ratio | Ambiguity — percentage of highly surprising tokens |
+
+Energy metrics are a separate overlay (`--energy` flag), not part of the 31-metric scoring. They highlight *where* in the text ambiguity lives, complementing the *what* from the deterministic metrics.
 
 ## Installation
 
