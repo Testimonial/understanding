@@ -1,0 +1,77 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Run tests
+      run: |
+        uv run pytest tests/ -v
+
+    - name: Run tests with coverage
+      run: |
+        uv run pytest tests/ --cov=understanding --cov-report=xml --cov-report=term
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+
+    - name: Set up Python
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: |
+        uv sync --dev
+
+    - name: Check package can be built
+      run: |
+        uv build
+
+    - name: Verify version consistency
+      run: |
+        VERSION_TOML=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+        VERSION_PY=$(grep '^__version__ = ' src/understanding/__init__.py | cut -d'"' -f2)
+        if [ "$VERSION_TOML" != "$VERSION_PY" ]; then
+          echo "Version mismatch: pyproject.toml=$VERSION_TOML, __init__.py=$VERSION_PY"
+          exit 1
+        fi
+        echo "Version check passed: $VERSION_TOML"
