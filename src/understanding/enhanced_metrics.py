@@ -10,13 +10,13 @@ Combines all metric layers:
 
 Total: 31 metrics across 6 categories
 
-New weight distribution:
-- Readability: 25% (reduced from 30%)
-- Structure: 35% (reduced from 40%)
-- Cognitive: 25% (reduced from 30%)
-- Semantic: 5% (NEW)
-- Testability: 5% (NEW)
-- Behavioral: 5% (NEW)
+Weight distribution (60% form, 40% substance):
+- Structure: 30% (IEEE 830, ISO 29148)
+- Testability: 20% (ISO 29148 mandatory)
+- Readability: 15% (Flesch/Kincaid/Gunning)
+- Cognitive: 15% (Sweller 1988)
+- Semantic: 10% (Lucassen 2017)
+- Behavioral: 10% (Harel 2003/2005)
 """
 
 from typing import Dict, Any
@@ -35,13 +35,16 @@ except ImportError:
 
 
 # Enhanced category weights (sum to 1.0)
+# Balanced for form (60%) vs substance (40%)
+# Structure/Readability/Cognitive = how well it's written
+# Testability/Semantic/Behavioral = what it actually says
 ENHANCED_CATEGORY_WEIGHTS = {
-    "readability": 0.25,    # Reduced from 0.30
-    "structure": 0.35,      # Reduced from 0.40
-    "cognitive": 0.25,      # Reduced from 0.30
-    "semantic": 0.05,       # NEW
-    "testability": 0.05,    # NEW
-    "behavioral": 0.05,     # NEW
+    "structure": 0.30,      # IEEE 830, ISO 29148 — foundational quality
+    "testability": 0.20,    # ISO 29148 mandatory — if you can't test it, it's not a requirement
+    "readability": 0.15,    # Flesch/Kincaid/Gunning — important baseline
+    "cognitive": 0.15,      # Sweller 1988 — cognitive load management
+    "semantic": 0.10,       # Lucassen 2017 — actor/action/object completeness
+    "behavioral": 0.10,     # Harel 2003/2005 — observable behavior
 }
 
 # Weights within each new category (must sum to 1.0 per category)

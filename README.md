@@ -14,12 +14,12 @@ Scans requirement specifications and scores them across 6 categories:
 
 | Category | Metrics | Weight | Basis | What It Measures |
 |----------|---------|--------|-------|-----------------|
-| Structure | 5 | 35% | IEEE 830, ISO 29148 | Atomicity, completeness, passive voice, pronouns, modal verbs |
-| Readability | 6 | 25% | Flesch 1948, Kincaid 1975, Gunning 1952 | Flesch, Kincaid, Gunning Fog, SMOG, Coleman-Liau, ARI |
-| Cognitive | 7 | 25% | Sweller 1988 (Cognitive Load Theory) | Sentence length, complexity, density, negations, conditionals |
-| Semantic | 6 | 5% | Lucassen 2017 (Visual Narrator) | Actor/action/object presence, outcomes, triggers |
-| Testability | 3 | 5% | IEEE 830 §4.3.7 | Quantifiable constraints, density, boundary coverage |
-| Behavioral | 4 | 5% | Harel 2003/2005 (Statecharts) | Scenarios, transitions, branches, observability |
+| Structure | 5 | 30% | IEEE 830, ISO 29148 | Atomicity, completeness, passive voice, pronouns, modal verbs |
+| Testability | 3 | 20% | IEEE 830 §4.3.7 | Quantifiable constraints, density, boundary coverage |
+| Readability | 6 | 15% | Flesch 1948, Kincaid 1975, Gunning 1952 | Flesch, Kincaid, Gunning Fog, SMOG, Coleman-Liau, ARI |
+| Cognitive | 7 | 15% | Sweller 1988 (Cognitive Load Theory) | Sentence length, complexity, density, negations, conditionals |
+| Semantic | 6 | 10% | Lucassen 2017 (Visual Narrator) | Actor/action/object presence, outcomes, triggers |
+| Behavioral | 4 | 10% | Harel 2003/2005 (Statecharts) | Scenarios, transitions, branches, observability |
 
 Quality gates enforce minimum thresholds based on ISO 29148:2018 and IEEE 830-1998.
 
@@ -238,17 +238,17 @@ specify implement
 
 ## All 31 Metrics
 
-**Structure (35%)** — standards-based (IEEE 830, ISO 29148): Atomicity, Completeness, Passive Voice Ratio, Ambiguous Pronoun Ratio, Modal Strength
+**Structure (30%)** — standards-based (IEEE 830, ISO 29148): Atomicity, Completeness, Passive Voice Ratio, Ambiguous Pronoun Ratio, Modal Strength
 
-**Readability (25%)** — proven formulas (Flesch 1948, Kincaid 1975, Gunning 1952): Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG, Coleman-Liau, ARI
+**Testability (20%)** — standards-based (IEEE 830 §4.3.7): Hard Constraint Ratio, Constraint Density, Negative Space Coverage
 
-**Cognitive (25%)** — theory-informed (Sweller 1988): Sentence Length, Syllable Complexity, Concept Density, Coordination, Subordination, Negation Load, Conditional Load
+**Readability (15%)** — proven formulas (Flesch 1948, Kincaid 1975, Gunning 1952): Flesch Reading Ease, Flesch-Kincaid Grade, Gunning Fog, SMOG, Coleman-Liau, ARI
 
-**Semantic (5%)** — research-inspired (Lucassen 2017): Actor Presence, Action Presence, Object Presence, Outcome Presence, Trigger Presence, SCC Composite
+**Cognitive (15%)** — theory-informed (Sweller 1988): Sentence Length, Syllable Complexity, Concept Density, Coordination, Subordination, Negation Load, Conditional Load
 
-**Testability (5%)** — standards-based (IEEE 830 §4.3.7): Hard Constraint Ratio, Constraint Density, Negative Space Coverage
+**Semantic (10%)** — research-inspired (Lucassen 2017): Actor Presence, Action Presence, Object Presence, Outcome Presence, Trigger Presence, SCC Composite
 
-**Behavioral (5%)** — research-inspired (Harel 2003/2005): Scenario Decomposition, Transition Completeness, Branch Coverage Proxy, Observability Score
+**Behavioral (10%)** — research-inspired (Harel 2003/2005): Scenario Decomposition, Transition Completeness, Branch Coverage Proxy, Observability Score
 
 ## Documentation
 

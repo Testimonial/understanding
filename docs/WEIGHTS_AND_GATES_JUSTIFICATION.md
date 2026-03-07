@@ -59,7 +59,7 @@ ENHANCED_CATEGORY_WEIGHTS = {
 - **IEEE 830-1998 §4.3.6**: "Each requirement should express a single thought" (Atomicity principle)
 - **Lucassen et al. (2017)**: Complete requirements (Actor-Action-Object) correlate with **40% fewer implementation defects**
 
-**Sub-Metrics** (35% total weight):
+**Sub-Metrics** (30% total weight):
 - **Atomicity Score** (12%): Single testable statement per requirement
   - Source: IEEE 830-1998 §4.3.6
   - Detection: Count coordinating conjunctions (and/or/but)
