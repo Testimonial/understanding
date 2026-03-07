@@ -1,0 +1,60 @@
+schema_version: "1.0"
+
+extension:
+  id: "understanding"
+  name: "Understanding"
+  version: "3.4.0"
+  description: "31 requirements quality metrics based on readability formulas, IEEE/ISO standards, and RE research. Scores specs across 6 categories with quality gates."
+  author: "Ladislav Bihari"
+  repository: "https://github.com/Testimonial/understanding"
+  license: "MIT"
+  homepage: "https://github.com/Testimonial/understanding"
+
+requires:
+  speckit_version: ">=0.1.0"
+  tools:
+    - name: "understanding"
+      version: ">=3.4.0"
+      required: true
+
+provides:
+  commands:
+    - name: "speckit.understanding.scan"
+      file: "commands/scan.md"
+      description: "Scan spec for 31 requirements quality metrics with quality gates"
+      aliases: ["speckit.understanding"]
+
+    - name: "speckit.understanding.validate"
+      file: "commands/validate.md"
+      description: "Enforce quality gates on spec (exit code 1 on failure)"
+
+    - name: "speckit.understanding.energy"
+      file: "commands/energy.md"
+      description: "[Experimental] Token-level ambiguity detection using energy metrics"
+
+  config:
+    - name: "understanding-config.yml"
+      template: "config-template.yml"
+      description: "Understanding extension configuration"
+      required: false
+
+hooks:
+  after_tasks:
+    command: "speckit.understanding.validate"
+    optional: true
+    prompt: "Run requirements quality validation on the spec?"
+    description: "Validate spec quality after task breakdown"
+
+tags:
+  - "quality"
+  - "metrics"
+  - "requirements"
+  - "validation"
+  - "readability"
+  - "IEEE-830"
+  - "ISO-29148"
+
+defaults:
+  threshold: 0.70
+  format: "text"
+  energy: false

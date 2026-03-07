@@ -1,0 +1,15 @@
+# Understanding Extension Configuration
+# Copy to understanding-config.yml and customize
+
+# Quality gate threshold (0.0-1.0)
+# Specs scoring below this fail validation
+threshold: 0.70
+
+# Output format: text, json, csv
+format: "text"
+
+# Enable experimental energy metrics (requires: pip install understanding[energy])
+energy: false
+
+# Use basic mode (18 metrics, no NLP) for faster CI checks
+basic: false

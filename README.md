@@ -220,6 +220,22 @@ for token, energy in result.hotspot_tokens:
 
 ## Usage with Spec Kit
 
+### As Extension (AI agent commands)
+
+```bash
+# Install extension into your spec-kit project
+specify extension add --dev /path/to/understanding/extension
+
+# Then use in your AI agent:
+# /speckit.understanding.scan
+# /speckit.understanding.validate
+# /speckit.understanding.energy
+```
+
+See [extension/README.md](extension/README.md) for details.
+
+### As Standalone Tool
+
 ```bash
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 uv tool install understanding
