@@ -6,6 +6,30 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/Testimonial/understanding/actions/workflows/test.yml/badge.svg)](https://github.com/Testimonial/understanding/actions/workflows/test.yml)
 
+<p align="center">
+  <img src="demo.gif" alt="understanding CLI demo" width="800">
+</p>
+
+## Why This Exists
+
+Requirements engineering has 40+ years of research — IEEE 830, ISO 29148, readability formulas, cognitive load theory — but nobody packaged it into something you can run in a terminal. Meanwhile, teams are throwing LLMs at spec reviews and getting different feedback every time.
+
+**understanding** is deterministic: same input, same output, every time. No API keys. No cloud. Runs locally in ~500ms.
+
+## How It Compares
+
+| Feature | understanding | LLM-based review | Manual review |
+|---------|:---:|:---:|:---:|
+| Deterministic (reproducible) | Yes | No | No |
+| Works offline | Yes | No | Yes |
+| No API keys needed | Yes | No | Yes |
+| Standards-based (IEEE/ISO) | Yes | Varies | Varies |
+| Speed (<1s) | Yes | No | N/A |
+| CI/CD integration | Yes | Possible | No |
+| Energy ambiguity detection | Yes | N/A | No |
+| JSON/CSV export | Yes | Varies | No |
+| Cost | Free | $$$ | Time |
+
 ## What It Does
 
 Scans requirement specifications and scores them across 6 categories:
@@ -152,29 +176,11 @@ understanding spec.md --per-req
 
 ## Example Output
 
-```
-Requirements Quality Metrics
-============================
+See the [demo GIF above](#understanding) for colored terminal output, or run:
 
-Overall Score: 0.78 (Good)
-
-Category Scores:
-  Readability:   0.87 (Very Good)
-  Structure:     0.80 (Very Good)
-  Cognitive:     0.71 (Good)
-  Semantic:      0.89 (Very Good)
-  Testability:   0.67 (Fair)
-  Behavioral:    0.60 (Fair)
-
-Quality Gates:
-  Overall    >=0.70  0.78  PASS
-  Structure  >=0.70  0.80  PASS
-  Testability >=0.70  0.67  FAIL
-  Semantic   >=0.60  0.89  PASS
-  Cognitive  >=0.60  0.71  PASS
-  Readability >=0.50  0.87  PASS
-
-Status: FAILED (1/6 gates failed)
+```bash
+understanding spec.md          # 31 metrics + quality gates + entity analysis
+understanding spec.md --energy  # + token-level ambiguity hotspots
 ```
 
 ## Quality Gates
