@@ -12,9 +12,9 @@
 
 ## Why This Exists
 
-Requirements engineering has 40+ years of research — IEEE 830, ISO 29148, readability formulas, cognitive load theory — but nobody packaged it into something you can run in a terminal. Meanwhile, teams are throwing LLMs at spec reviews and getting different feedback every time.
+Spec reviews today lack reproducibility — whether done by humans or LLMs, the same document produces different feedback every time. That's not a quality process.
 
-**understanding** is deterministic: same input, same output, every time. No API keys. No cloud. Runs locally in ~500ms.
+Requirements engineering has 40+ years of proven research — IEEE 830, ISO 29148, readability formulas, cognitive load theory — but it lived in academic papers, not engineering toolchains. **understanding** makes it operational: deterministic analysis you can run in a terminal and integrate into CI/CD. Same input, same output, every time. No API keys. No cloud. ~500ms.
 
 ## How It Compares
 
