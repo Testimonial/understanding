@@ -69,41 +69,22 @@ Energy is a separate overlay (`--energy` flag), not part of the 31-metric score 
 
 ## Installation
 
-```bash
-# Using uv (recommended) — install with NLP + diagram support
-uv tool install git+https://github.com/Testimonial/understanding.git \
-  --with "spacy>=3.0.0" \
-  --with "graphviz>=0.20.0"
+All dependencies (NLP, diagrams, energy metrics) are bundled — one command installs everything.
 
-# Download spaCy language model
-uv pip install --python ~/.local/share/uv/tools/understanding/bin/python \
-  en-core-web-sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+```bash
+# Using uv (recommended)
+uv tool install git+https://github.com/Testimonial/understanding.git
 
 # Using pip (alternative)
-pip install "understanding[all]"
-python -m spacy download en_core_web_sm
+pip install git+https://github.com/Testimonial/understanding.git
 ```
 
-### With Energy Metrics (Experimental)
-
-Adds token-level perplexity analysis using a local language model (SmolLM2-135M, ~270MB auto-download on first use). No API keys needed.
-
-```bash
-# Using uv — add energy to the install command
-uv tool install git+https://github.com/Testimonial/understanding.git \
-  --with "spacy>=3.0.0" \
-  --with "graphviz>=0.20.0" \
-  --with "transformers>=4.30.0" \
-  --with "torch>=2.0.0"
-
-# Using pip
-pip install "understanding[all,energy]"
-```
-
-Then use with `--energy` flag:
+Energy metrics use a local language model (SmolLM2-135M, ~270MB auto-download on first use). No API keys needed. Use with `--energy` flag:
 ```bash
 understanding spec.md --energy
 ```
+
+Graphviz is required for PNG/SVG/PDF diagram export: `brew install graphviz` (macOS) or `apt install graphviz` (Linux).
 
 ## Usage
 
@@ -215,7 +196,7 @@ print(f"Testability: {categories['testability']:.2%}")
 ```python
 from understanding import analyze_energy
 
-# Requires: pip install understanding[energy]
+# Energy is included in the default install
 result = analyze_energy("The system must validate user email format before saving.")
 print(f"Composite: {result.composite_score:.2%}")
 
@@ -247,7 +228,7 @@ specify extension add --dev /tmp/understanding/extension
 
 # Verify
 specify extension list
-# Should show: Understanding (v3.4.0)
+# Should show: Understanding (v3.5.0)
 ```
 
 ### Step 4: Use in AI Agent
